@@ -10,11 +10,12 @@ router.post('/register',upload.single("image"), [
     check("email").isEmail().withMessage("Email is required"),
     check("role").notEmpty().withMessage("Role is required"),
     check("password").notEmpty().withMessage("Password is required"),
-    check("image").custom((value,{req})=>{
-        if(!req.file){
-            throw new Error("Image is required")
-        } return true;
-    })
+    check("image")
+    // .custom((value,{req})=>{
+    //     if(!req.file){
+    //         throw new Error("Image is required")
+    //     } return true;
+    // })
 ] ,registerUser);
 
 router.post('/login', [

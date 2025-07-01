@@ -49,8 +49,6 @@ export const listBooks = async(req,res,next) => {
 export const addBook = async (req,res,next) => {
     try{
         const errors = validationResult(req)
-        console.log(req.file)
-
         const imagePath = req.file ? req.file.path : null
 
         if(!errors.isEmpty()){
