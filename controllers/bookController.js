@@ -2,48 +2,42 @@ import Book from "../models/books.js"
 import HttpError from "../middlewares/httpError.js"
 import { validationResult } from "express-validator";
 
-//list
-export const listBooks = async(req,res,next) => {
-    try{
-        const {user_role, user_id} = req.userData
+export const listBooks = async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 8;
+  const skip = (page - 1) * limit;
 
-        let listedBooks = []
-        let filter = { is_deleted: false };
+  try {
+    const { user_role, user_id } = req.userData;
 
-        if (user_role === "seller") {
-            filter.seller = user_id;
-            
-            listedBooks = await Book.find(filter)
-                .select("title image author price stock seller")
-                .populate({
-                    path: "seller",
-                    select: "name"
-                })
-        } else {
-            listedBooks = await Book.find(filter)
-            .select("title image author price stock seller")
-            .populate({
-                path: "seller",
-                select: "name"
-            })
-            // listedBooks = await Book.find({is_deleted: false})
-            // .select("title image author price stock seller")
-            // .populate({
-            //     path: "seller",
-            //     select: "name"
-            // });
-        }
-        const total = await Book.countDocuments(filter);
-        res.status(200).json({
-            status: true,
-            message: "",
-            data: listedBooks,
-            total,
-        });
-    } catch (err){
-        return next(new HttpError("error fetching books",500));
+    let filter = { is_deleted: false };
+
+    if (user_role === "seller") {
+      filter.seller = user_id;
     }
+
+    const total = await Book.countDocuments(filter);
+
+    const listedBooks = await Book.find(filter)
+      .select("title image author price stock seller")
+      .populate({
+        path: "seller",
+        select: "name",
+      })
+      .skip(skip)    
+      .limit(limit);  
+
+    res.status(200).json({
+      status: true,
+      message: "",
+      data: listedBooks,
+      total,
+    });
+  } catch (err) {
+    return next(new HttpError("error fetching books", 500));
+  }
 };
+
 
 // add a book
 export const addBook = async (req,res,next) => {
