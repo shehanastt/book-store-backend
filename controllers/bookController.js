@@ -25,6 +25,7 @@ export const listBooks = async (req, res, next) => {
         path: "seller",
         select: "name",
       })
+      .sort({ createdAt: -1 })
       .skip(skip)    
       .limit(limit);  
 
@@ -127,22 +128,17 @@ export const getBook = async (req, res, next)=> {
 // delete a book
 export const deleteBook = async(req,res,next) => {
     try{
-        console.log("helloooo")
         const {id} = req.params
         const {user_id, user_role} = req.userData
 
         if(user_role !== "seller") {
             return next (new HttpError('only sellers can delete',403));
         } else {
-
-            console.log(user_id,user_role,"req user data")
-    
             const del = await Book.findOneAndUpdate(
                 {_id: id, seller: user_id, is_deleted: false},
                 {is_deleted: true},
                 {new: true});
     
-                console.log(del,"del")
     
             if(!del){
                 return next(new HttpError('Book not found',404));
@@ -177,10 +173,6 @@ export const editBook = async(req,res,next) =>{
             if(user_role !== "seller") {
                 return next (new HttpError('only sellers can edit',403));
             } else{
-
-                // if(!imagePath){
-                //     return next(new HttpError("Image is required",422));
-                // } else{
 
                     const updatedBook = {
                         title,

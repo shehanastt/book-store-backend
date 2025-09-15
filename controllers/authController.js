@@ -16,11 +16,7 @@ export const registerUser = async (req, res, next)=> {
             return next(new HttpError("Invalid inputs passed, please check and retry", 422))
         } else {
             const {name , email ,role ,password} = req.body
-            // const imagePath = req.file?.path;
-            // const imagePath = req.file ? req.file.path : 'uploads/default-profile-pic.png';
             const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : 'uploads/default-profile-pic.png';
-
-
 
             if(!imagePath){
                 return next(new HttpError("Please upload your profile picture",422));

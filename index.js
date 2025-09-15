@@ -11,6 +11,8 @@ import userRoute from './routes/userRoute.js';
 dotenv.config()
 const app = express();
 const PORT = process.env.PORT || 8000;
+
+// database connect
 connectDB()
 app.use('/uploads' ,express.static('uploads'))
 
@@ -24,7 +26,6 @@ app.use('/auth',authRoute);
 app.use('/user',userRoute);
 app.use('/books',bookRoute);
 
-// database connect
 
 
 
